@@ -88,6 +88,18 @@ class GraphPlan(object):
             else:
                 return self.splitPlan(plan)
         
+    def getActionPlan(self, action):
+        if self.planLoaded == True and self.actionsLoaded == True:
+            request = action + "(P)"
+            print("requested plan: " + request)
+            plan = self.a.askBelieve( request )
+       
+            if plan == False:
+                print("could not find a plan.")
+                return False
+            else:
+                return self.splitPlan(plan)
+        
     # returns a dictionary of steps with a list of action for each step
     # steps are indexed from 1 to n
     def  splitPlan(self, plan):

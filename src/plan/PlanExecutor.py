@@ -3,116 +3,89 @@ Created on Feb 24, 2018
 
 @author: gaignier
 '''
-#from spadeutils.behaviours.spadeBehaviours import FSMBehaviour
-from spade.Behaviour import FSMBehaviour
-
-from spadeutils.behaviours.sendOrderBehaviour import sendOrderBehaviour
-from spadeutils.behaviours.endPlanBehaviour import endPlanBehaviour
-from common.Vocabulary import Vocabulary
+from spadeutils.behaviours.spadeBehaviours import OneShotBehaviour
+from Queue import Queue
+from turtle.services.navigationService import GoToPose
+from turtle.services.armService import Arm
 
 
-class PlanExecutor(FSMBehaviour):
+
+class PlanExecutor(OneShotBehaviour):
     
-    TRANSITION_SUCCESS = 0
-    TRANSITION_ERROR = 1
-    
-    def __init__(self, plan, robot):
-        super(PlanExecutor, self).__init__()
-        self.plan = plan
-        self.fsmStates = {}
-        # we need to know if each action of the plan is assigned to the robot or not
-        self.robot = robot
-        self.create()
-        
+    def __init__(self):
+        OneShotBehaviour.__init__(self,"PlanExecutor")
+        self.waitingActions = Queue()
+
     def onStart(self):
-        print "PlanExecutor started"
+        print "PlanExecutor new started"
 
     def onEnd(self):
-        print "PlanExecutor ended"
+        print "PlanExecutor new ended"
 
-    def create(self):
-        print "will generate an ad hoc FSMBehaviour to execute the plan"
-        i = 0
-        # iterate over the steps
-        for key in self.plan:
-            actions = self.plan[key]
-            # iterate over the actions in a step (could be executed in a different order)
+    def addAction(self, task):
+        self.waitingActions.put(task)
+
+    def addPlan(self, plan):
+        for key in plan:
+            actions = plan[key]
             for act in actions:
-                self.addAction(act, i)
-                i = i+1
-        self.fsmStates["end"] = i
-        print "register last state: ", i
-        self.registerLastState(endPlanBehaviour("end"), i)
-        self.createTransitions()
+                self.addAction(self.parseAction(act))
+                
+    def parseAction(self, act):
+        spl1 = act.split("(")
+        spl2 = spl1[1].split(")")
+        spl3 = spl2[0].split(",")
+        name = spl1[0]
+        params = list()
+        for p in spl3:
+            params.append(p)
+        return action(name, params, self.myAgent)    
         
-    def addAction(self, act, i):
-        act_parsed = Vocabulary.parseMessage(act)
-        executors = []
-        params = []
-        name = act_parsed["object"]
-        for val in act_parsed["params"]:
-            if val in Vocabulary.ROBOT_LIST:
-                executors.append(val)
-            else:
-                params.append(val)
-        
-        # test who shall execute the action
-        # if many, each is notified
-        forme = False
-        try:
-            executors.index(self.robot)
-            forme = True
-        except:
-            forme = False
-            
-        if(forme):
-            self.fsmStates[name] = i
-            behaviourName = name + "Behaviour"
-            behaviour = globals()[behaviourName]
-            instance = behaviour(*params)
-            if(i == 0):
-                self.registerFirstState(instance, self.fsmStates[name])
-            else:
-                self.registerState(instance, self.fsmStates[name])
-        else:
-            stateName = "distribute" + name + str(i)
-            self.fsmStates[stateName] = i
-            print "state name to be added: " + stateName + " with number " + str(i)
-            behaviourName = "sendOrderBehaviour"
-            #behaviour = globals()[behaviourName]
-            #instance = behaviour(name, executors, params)
-            #instance = eval(behaviourName)(name, executors, params)
-            print "send order behaviour created with executors: ", executors
-            instance = sendOrderBehaviour(name, executors, params)
-            
-            if(i == 0):
-                print "register first state: ", self.fsmStates[stateName]
-                self.registerFirstState(instance, self.fsmStates[stateName])
-            else:
-                print "register state: ", self.fsmStates[stateName]
-                self.registerState(instance, self.fsmStates[stateName])
 
-    def createBehaviourCall(self, name, params):
-        result = name + "Behaviour(" + name
-        for val in params:
-            result = result + ","
-            result = result + val
-        result = result + ")"
-        return result
-    
-    def createSendBehaviourCall(self, name, params):
-        result = "sendOrderBehaviour(" + name
-        for val in params:
-            result = result + ","
-            result = result + val
-        result = result + ")"
-        return result
-    
-    def createTransitions(self):
-        for i in range(0,len(self.fsmStates)-1):
-            print "transition from " + str(i) + " to " + str(i+1) + " at condition: " + str(PlanExecutor.TRANSITION_SUCCESS) 
-            self.registerTransition(i, i+1, PlanExecutor.TRANSITION_SUCCESS)     
+    def process(self):
+        self.addPlan(self.myAgent.plan)
+        while not self.waitingActions.empty():
+            action = self.waitingActions.get(True)
+            try:
+                action.run()
+            except AttributeError:
+                print("no such robot action: " + action.name)
+                print("entire plan cancelled")
+                self.waitingActions.queue.clear()
+      
+class action(object):
+    def __init__(self, name, parameters, turtleAgent):
+        self.name = name
+        self.parameters = parameters
+        self.myAgent = turtleAgent
+        
+    # dynamic call of function
+    # if the function does not exist, the exception is caught in the behaviour
+    # and the action queue emptied
+    def run(self):
+        funct = getattr(self, self.name)
+        funct(*self.parameters)
             
-    def printBehaviour(self):
-        print("states: ", self.fsmStates)     
-    
+    # we need to make sure the names and profiles of Nao actions
+    # are identical to the one defined with STRIPS
+    # else an error is caught and the plan totally cancelled   
+    # here we make the bridge between external STRIPS calls and internal calls      
+    def goTo(self, robot, placeFrom, placeTo):
+        print(robot + " going from: " + placeFrom + " To: " + placeTo)
+        knowledge = self.myAgent.getData("knowledge")
+        to = knowledge["pose"][placeTo]
+        print "going to ", to["position"], to["quaterion"]
+        
+        goService = GoToPose()
+        goService.goTo(to["position"], to["quaterion"])
+        
+    def take(self, robot, obj, place):
+        print(robot + " taking: " + obj + " At: " + place)
+        arm = Arm()
+        arm.take()
+        
+    def put(self, robot, obj, place):
+        print(robot + " putting: " + obj + " On: " + place)
+        arm = Arm()
+        arm.put()
+        

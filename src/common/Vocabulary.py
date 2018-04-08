@@ -19,12 +19,12 @@ class Vocabulary(object):
     GOTO = "goTo"
     PUSH = "push"
     GATHER = "goNear"
-    MOVEARM = "moveArm"
+    GETCOFFEE = "getCoffee"
     
     #ontologies
     TURTLEMOVE = "turtleMove"
     TURTLEPUSH = "turtlePush"
-    TURTLEARM = "turtleArm"
+    GETPLAN = "getPlan"
     
     #robots available
     NAO1 = "nao1"

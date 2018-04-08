@@ -7,7 +7,7 @@ class WaitMessageBehaviour(OneShotBehaviour):
     goTo = 0
     goNear = 1
     pushTheBox = 2
-    moveArm = 3
+    planExecute = 3
 
     def process(self):
         print "wait for message behaviour"
@@ -40,11 +40,16 @@ class WaitMessageBehaviour(OneShotBehaviour):
                     print "push the box message received"
                     self._exitcode = WaitMessageBehaviour.pushTheBox
                     break
-                if(message.getOntology() == Vocabulary.TURTLEARM):
+                if(message.getOntology() == Vocabulary.GETPLAN):
                     content = Vocabulary.parseMessage(message.getContent())
-                    if(content['object'] == Vocabulary.MOVEARM):
-                        # lire les bons parametres
-                        destination = content['params'][0]
-                        print destination
-                        
+                    if(content['object'] == Vocabulary.GETCOFFEE):
+                        for i in range(1,3):
+                            plan = self.myAgent.planer.getActionPlan(Vocabulary.GETCOFFEE)
+                            if plan:
+                                break;
+                        print(plan)
+                        self.myAgent.plan = plan
+                        self._exitcode = WaitMessageBehaviour.planExecute
+                    break
+                
         print "wait for message behaviour exited"

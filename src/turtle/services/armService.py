@@ -21,7 +21,7 @@ from math import radians
 
 class Servo:
     
-    def __init__(self, name, min_angle, max_angle, ticks, neutral, rad_per_tick):
+    def __init__(self, name, min_angle, max_angle, ticks, neutral, rad_per_tick, invert):
         self.name = name
         self.min_angle = min_angle
         self.max_angle = max_angle
@@ -29,6 +29,7 @@ class Servo:
         self.ticks = ticks
         self.neutral = neutral
         self.rad_per_tick = rad_per_tick
+        self.invert = invert
         
     def setPosition(self, pos):
         self.position = pos
@@ -38,6 +39,8 @@ class Servo:
     
     def angleToTicks(self, angle):
         ticks = self.neutral + (angle/self.rad_per_tick)
+        if self.invert:
+            ticks = self.neutral - (angle/self.rad_per_tick)
         if ticks >= self.ticks:
             return self.ticks-1.0
         if ticks < 0:
@@ -71,12 +74,13 @@ class Arm:
             n = "/arbotix/joints/"+ name +"/"
             ticks = rospy.get_param(n+"ticks", 1024)
             neutral = rospy.get_param(n+"neutral", ticks/2)
+            invert = rospy.get_param(n+"invert", False)
             ranges = rospy.get_param(n+"range", 300)
             rad_per_tick = radians(ranges)/ticks
             
             # pull min and max angles for each servo
             min_angle, max_angle = getJointLimits(name, joint_defaults)
-            serv = Servo(name, min_angle, max_angle, ticks, neutral, rad_per_tick)
+            serv = Servo(name, min_angle, max_angle, ticks, neutral, rad_per_tick, invert)
             self.servos.append(serv)
         
     # moves a single servo at a given speed to a given angle (in radians)

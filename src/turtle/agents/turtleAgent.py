@@ -18,8 +18,9 @@ from turtle.behaviours.transformPositionBehaviour import TransformPositionBehavi
 from turtle.behaviours.moveToWithFeedBackBehaviour import MoveToWithFeedBackBehaviour
 from turtle.behaviours.testIfNearOtherBehaviour import TestIfNearOtherBehaviour
 from turtle.behaviours.pushBehaviour import pushBehaviour
-from plan.PlanExecutor import PlanExecutor
 
+from plan.PlanExecutor import PlanExecutor
+from turtle.services.armService import Arm
 
 class TurtleAgent(Agent):
 
@@ -29,6 +30,10 @@ class TurtleAgent(Agent):
         
         print "will init rosnode with name: " + name
         rospy.init_node(name)
+        
+        # inti arm
+        self.arm = Arm()
+        self.arm.goToPosition(Arm.POSITION_1)
         #self.communicator._receiver = receiveBehaviour
         behaviours = self.communicator.getBehaviours()
         behaviours.append(SystemCore())

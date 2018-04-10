@@ -6,7 +6,6 @@ Created on Feb 24, 2018
 from spadeutils.behaviours.spadeBehaviours import OneShotBehaviour
 from Queue import Queue
 from turtle.services.navigationService import GoToPose
-from turtle.services.armService import Arm
 
 
 
@@ -58,6 +57,7 @@ class action(object):
         self.name = name
         self.parameters = parameters
         self.myAgent = turtleAgent
+        self.arm = turtleAgent.arm
         
     # dynamic call of function
     # if the function does not exist, the exception is caught in the behaviour
@@ -81,11 +81,9 @@ class action(object):
         
     def take(self, robot, obj, place):
         print(robot + " taking: " + obj + " At: " + place)
-        arm = Arm()
-        arm.take()
+        self.arm.take()
         
     def put(self, robot, obj, place):
         print(robot + " putting: " + obj + " On: " + place)
-        arm = Arm()
-        arm.put()
+        self.arm.put()
         

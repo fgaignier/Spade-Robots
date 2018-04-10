@@ -1,12 +1,9 @@
 '''
 Created on Apr 6, 2018
-
 @author: gaignier
-
 using the arbotix python package to command the arm:
 http://docs.ros.org/jade/api/arbotix_python/html/classarbotix__python_1_1arbotix_1_1ArbotiX.html#a456f38adeb1075dcdd24ff7f1ad6a1cf
 much better than the usual subscribing method
-
 '''
 
 import rospy

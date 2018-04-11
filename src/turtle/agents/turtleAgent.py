@@ -20,7 +20,8 @@ from turtle.behaviours.testIfNearOtherBehaviour import TestIfNearOtherBehaviour
 from turtle.behaviours.pushBehaviour import pushBehaviour
 
 from plan.PlanExecutor import PlanExecutor
-from turtle.services.armService import Arm
+#from turtle.services.armService import Arm
+from turtle.services.armServicePub import ArmPub
 
 class TurtleAgent(Agent):
 
@@ -32,8 +33,11 @@ class TurtleAgent(Agent):
         rospy.init_node(name)
         
         # init arm
-        self.arm = Arm()
-        self.arm.goToPosition(Arm.POSITION_1)
+        #self.arm = Arm()
+        #self.arm.goToPosition(Arm.POSITION_RELAX)
+        
+        self.arm = ArmPub()
+        self.arm.goToPosition(ArmPub.POSITION_RELAX)
         
         
         behaviours = self.communicator.getBehaviours()

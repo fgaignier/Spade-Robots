@@ -96,16 +96,19 @@ class Arm:
             i = i+1
             
     def closeGripper(self):
-        max_angle = self.servos[0].max_angle
-        print " max angle for gripper = " , max_angle
-        self.moveServo(0,max_angle)
-    
-    def openGripper(self):
         min_angle = self.servos[0].min_angle
         print " min angle for gripper = " , min_angle
         self.moveServo(0,min_angle)
+    
+    def openGripper(self):
+        max_angle = self.servos[0].max_angle
+        print " max angle for gripper = " , max_angle
+        self.moveServo(0,max_angle)
         
     def take(self):
+        
+        self.openGripper()
+        time.sleep(2)
         self.goToPosition(self.POSITION_1)
         # waits 2 seconds before closing the gripper
         time.sleep(2)

@@ -17,7 +17,7 @@ from turtle.behaviours.getPositionBehaviour import GetPositionBehaviour
 from turtle.behaviours.transformPositionBehaviour import TransformPositionBehaviour
 from turtle.behaviours.moveToWithFeedBackBehaviour import MoveToWithFeedBackBehaviour
 from turtle.behaviours.testIfNearOtherBehaviour import TestIfNearOtherBehaviour
-from turtle.behaviours.pushBehaviour import pushBehaviour
+from turtle.behaviours.moveBehaviour import moveBehaviour
 
 from plan.PlanExecutor import PlanExecutor
 #from turtle.services.armService import Arm
@@ -53,15 +53,19 @@ class TurtleAgent(Agent):
         self.setData("otherTurtleAid", otherAid)
         self.setData("otherState", Goals.otherStatus["nonReady"])
         print self.getData("knowledge")
+        
+        # stores parameters received by waitMessageBehaviour
+        # in case it is a plan
         self.plan = ""
-        self.distance = 0
+        # in case it is a move order
+        self.moveParams = list()
         
     def _setup(self):
         Agent._setup(self)
         print "agent starting"
         fsmStates = {"waitForMessage": 1, "goToPose": 2, "informNao": 3,
                      "getPosition": 4, "transformPosition": 5,
-                     "moveWithFeedBack": 6, "testIfNear": 7, "push": 8, "planExecute": 9}
+                     "moveWithFeedBack": 6, "testIfNear": 7, "move": 8, "planExecute": 9}
         fsm = spade.Behaviour.FSMBehaviour()
 
         fsm.registerFirstState(WaitMessageBehaviour(fsmStates["waitForMessage"]),fsmStates["waitForMessage"])
@@ -73,7 +77,7 @@ class TurtleAgent(Agent):
                           fsmStates["moveWithFeedBack"])
         fsm.registerState(TestIfNearOtherBehaviour(fsmStates["testIfNear"]),
                           fsmStates["testIfNear"])
-        fsm.registerState(pushBehaviour(fsmStates["push"]), fsmStates["push"])
+        fsm.registerState(moveBehaviour(fsmStates["move"]), fsmStates["move"])
         fsm.registerState(PlanExecutor(), fsmStates["planExecute"])
 
         # transition succession if message received is goTo
@@ -96,10 +100,9 @@ class TurtleAgent(Agent):
         fsm.registerTransition(fsmStates["testIfNear"], fsmStates["getPosition"],
                                TestIfNearOtherBehaviour.NotNear)
                 
-        # transition succession if message received is push
+        # transition succession if message received is move
         fsm.registerTransition(fsmStates["waitForMessage"],fsmStates["push"],WaitMessageBehaviour.pushTheBox)
-        fsm.registerTransition(fsmStates["push"], fsmStates["informNao"], 0)
-        fsm.registerTransition(fsmStates["informNao"], fsmStates["waitForMessage"], 0)
+        fsm.registerTransition(fsmStates["push"], fsmStates["waitForMessage"], 0)
 
         # plan execution
         fsm.registerTransition(fsmStates["waitForMessage"],fsmStates["planExecute"],WaitMessageBehaviour.planExecute)

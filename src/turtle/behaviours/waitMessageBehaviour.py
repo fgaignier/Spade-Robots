@@ -8,6 +8,7 @@ class WaitMessageBehaviour(OneShotBehaviour):
     goNear = 1
     pushTheBox = 2
     planExecute = 3
+    move = 4
 
     def process(self):
         print "wait for message behaviour"
@@ -35,11 +36,11 @@ class WaitMessageBehaviour(OneShotBehaviour):
                                                          "action": "goNear"})
                         self._exitcode = WaitMessageBehaviour.goNear
                         break
-                # Turtle push the box   
-                if(message.getOntology() == Vocabulary.TURTLEPUSH):
-                    print "push the box message received"
-                    self._exitcode = WaitMessageBehaviour.pushTheBox
-                    break
+                    if(content['object'] == Vocabulary.MOVE):
+                        print "move message received"
+                        self.myAgent.moveParams = content['params']
+                        self._exitcode = WaitMessageBehaviour.move
+                        break
                 if(message.getOntology() == Vocabulary.GETPLAN):
                     content = Vocabulary.parseMessage(message.getContent())
                     if(content['object'] == Vocabulary.GETCOFFEE):

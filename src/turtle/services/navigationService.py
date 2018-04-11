@@ -71,12 +71,30 @@ class Move:
         r = rospy.Rate(10)
         move_cmd = Twist()
         move_cmd.linear.x = -0.1
-        move_cmd.angular.z = 0
+        #move_cmd.angular.z = 0
         for i in range(distance):
             self.cmd_vel.publish(move_cmd)
             r.sleep()
         print "finished pushing the box"
 
+    # enables to go in a given direction (negative distance for backwards)
+    # give distance and angle in radians
+    def move(self, distance, angle):
+        print "move on ", distance
+        r = rospy.Rate(10)
+        move_cmd = Twist()
+        if distance < 0:
+            move_cmd.linear.x = -0.1
+        else:
+            move_cmd.linear.x = 0.1
+            
+        move_cmd.angular.x = angle
+
+        for i in range(distance):
+            self.cmd_vel.publish(move_cmd)
+            r.sleep()
+        print "finished moving"
+        
     def shutdown(self):
         # stop turtlebot
         rospy.loginfo("Stop TurtleBot")

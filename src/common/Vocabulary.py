@@ -17,14 +17,14 @@ class Vocabulary(object):
     
     # actions (message body)
     GOTO = "goTo"
-    PUSH = "push"
+    #PUSH = "push"
     GATHER = "goNear"
     GETCOFFEE = "getCoffee"
     TAKEOBJECT= "takeObject"
+    MOVE = "move"
     
-    #ontologies
+    #ontologies: simple actions: Turtlemove. Complex GETPLAN
     TURTLEMOVE = "turtleMove"
-    TURTLEPUSH = "turtlePush"
     GETPLAN = "getPlan"
     
     #robots available

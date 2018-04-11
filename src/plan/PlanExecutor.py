@@ -6,6 +6,7 @@ Created on Feb 24, 2018
 from spadeutils.behaviours.spadeBehaviours import OneShotBehaviour
 from Queue import Queue
 from turtle.services.navigationService import GoToPose
+from turtle.services.navigationService import Move
 
 
 
@@ -86,4 +87,11 @@ class action(object):
     def put(self, robot, obj, place):
         print(robot + " putting: " + obj + " On: " + place)
         self.arm.put()
+    
+    def move(self, robot, dist, angle):
+        print(robot + " moving on distance: " + dist + " With angle: " + angle)
+        moveService = Move()
+        moveService.move(dist, angle)
+        
+        
         

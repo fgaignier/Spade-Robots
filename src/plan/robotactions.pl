@@ -2,10 +2,10 @@ object(a).
 object(b).
 object(c).
 robot(samira).
-position(smallbox).
-position(salle1).
-position(salle2).
-support(box).
+position(sofa).
+position(principale).
+position(chair).
+support(table).
 
 % take
 can(take(R, X, At), [handempty(R), clear(X), at(R,At), at(X,At)], robot) :- 
@@ -36,6 +36,6 @@ deletes(put(R, X, On), [holding(R,X), free(On)], robot) :-
 /*definition de scenaris pour les robots: */
 /* premier: getCoffee (prendre le gobelet dans une piece et l'amener dans une autre et le poser sur une boite */
 
-getCoffee(P):- plan([handempty(samira), clear(a), at(samira, salle1), at(a, smallbox), at(box, salle2), free(box)], [handempty(samira), on(a,box)], robot, P).
-
+getCoffee(P):- plan([handempty(samira), clear(a), at(samira, principale), at(a, chair), at(table, sofa), free(table)], [handempty(samira), on(a, table)], robot, P).
+takeObject(P):- plan([handempty(samira), clear(a), at(samira, principale), at(a, principale)], [holding(samira, a)], robot, P).
 

@@ -50,6 +50,13 @@ class WaitMessageBehaviour(OneShotBehaviour):
                         print(plan)
                         self.myAgent.plan = plan
                         self._exitcode = WaitMessageBehaviour.planExecute
+                    if(content['object'] == Vocabulary.TAKEOBJECT):
+                        for i in range(1,3):
+                            plan = self.myAgent.planer.getActionPlan(Vocabulary.TAKEOBJECT)
+                            if plan:
+                                break;
+                        print(plan)
+                        self.myAgent.plan = plan
+                        self._exitcode = WaitMessageBehaviour.planExecute
                     break
-                
         print "wait for message behaviour exited"

@@ -20,6 +20,7 @@ class Vocabulary(object):
     PUSH = "push"
     GATHER = "goNear"
     GETCOFFEE = "getCoffee"
+    TAKEOBJECT= "takeObject"
     
     #ontologies
     TURTLEMOVE = "turtleMove"

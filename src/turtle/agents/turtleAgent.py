@@ -31,10 +31,11 @@ class TurtleAgent(Agent):
         print "will init rosnode with name: " + name
         rospy.init_node(name)
         
-        # inti arm
+        # init arm
         self.arm = Arm()
         self.arm.goToPosition(Arm.POSITION_1)
-        #self.communicator._receiver = receiveBehaviour
+        
+        
         behaviours = self.communicator.getBehaviours()
         behaviours.append(SystemCore())
         Agent.__init__(self, name, host, password, graphplan, actionplan, behaviours)

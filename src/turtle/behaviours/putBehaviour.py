@@ -9,6 +9,6 @@ class takeBehaviour(OneShotBehaviour):
         self.arm = self.myAgent.arm
 
     def process(self):
-        print "TakeBehaviour"
-        self.arm.take()
+        print "PutBehaviour"
+        self.arm.put()
         

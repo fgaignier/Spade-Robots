@@ -17,11 +17,13 @@ class Vocabulary(object):
     
     # actions (message body)
     GOTO = "goTo"
-    #PUSH = "push"
+    PUSH = "push"
     GATHER = "goNear"
     GETCOFFEE = "getCoffee"
-    TAKEOBJECT= "takeObject"
+    TAKE= "take"
     MOVE = "move"
+    DONE = "finished"
+    PUT = "put"
     
     #ontologies: simple actions: Turtlemove. Complex GETPLAN
     TURTLEMOVE = "turtleMove"
@@ -48,8 +50,19 @@ class Vocabulary(object):
         result['object'] = name
         result['params'] = params
         return result
+
+    @staticmethod
+    def buildMessage(name, params):
+        message = name + "("
+        for p in params:
+            message = message + p + ","
+        message = message.rstrip(',')
+        message = message + ")"
+        return message
     
     @staticmethod
     def getAid(name, host):
         return aid(name + host, ["xmpp://" + name + "@" + host])
+    
+        
             

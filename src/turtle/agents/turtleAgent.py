@@ -18,6 +18,9 @@ from turtle.behaviours.transformPositionBehaviour import TransformPositionBehavi
 from turtle.behaviours.moveToWithFeedBackBehaviour import MoveToWithFeedBackBehaviour
 from turtle.behaviours.testIfNearOtherBehaviour import TestIfNearOtherBehaviour
 from turtle.behaviours.moveBehaviour import moveBehaviour
+from turtle.behaviours.pushBehaviour import pushBehaviour
+from turtle.behaviours.takeBehaviour import takeBehaviour
+from turtle.behaviours.informBehaviour import InformBehaviour
 
 from plan.PlanExecutor import PlanExecutor
 #from turtle.services.armService import Arm
@@ -42,7 +45,12 @@ class TurtleAgent(Agent):
         
         behaviours = self.communicator.getBehaviours()
         behaviours.append(SystemCore())
+        
+        # does not use the overwritten SpadeAgent
+        # calls directly the constructor of Spade Agent
         Agent.__init__(self, name, host, password, graphplan, actionplan, behaviours)
+        
+        
         with open(knowledge) as knowledge:
             self.setData("knowledge", json.load(knowledge)[self.localName])
         self.setData("goals", {"pose": {}})
@@ -57,15 +65,21 @@ class TurtleAgent(Agent):
         # stores parameters received by waitMessageBehaviour
         # in case it is a plan
         self.plan = ""
-        # in case it is a move order
-        self.moveParams = list()
+        # stores the parameters of an order
+        self.parameters = list()
+        # stores who gave the order
+        self.messageSender = ""
+        self.name = name
+        
         
     def _setup(self):
         Agent._setup(self)
         print "agent starting"
         fsmStates = {"waitForMessage": 1, "goToPose": 2, "informNao": 3,
                      "getPosition": 4, "transformPosition": 5,
-                     "moveWithFeedBack": 6, "testIfNear": 7, "move": 8, "planExecute": 9}
+                     "moveWithFeedBack": 6, "testIfNear": 7, "move": 8, "planExecute": 9,
+                     "take": 10, "push": 11, "inform": 12, "put": 13}
+        
         fsm = spade.Behaviour.FSMBehaviour()
 
         fsm.registerFirstState(WaitMessageBehaviour(fsmStates["waitForMessage"]),fsmStates["waitForMessage"])
@@ -79,12 +93,12 @@ class TurtleAgent(Agent):
                           fsmStates["testIfNear"])
         fsm.registerState(moveBehaviour(fsmStates["move"]), fsmStates["move"])
         fsm.registerState(PlanExecutor(), fsmStates["planExecute"])
-
-        # transition succession if message received is goTo
-        fsm.registerTransition(fsmStates["waitForMessage"],fsmStates["goToPose"],WaitMessageBehaviour.goTo)
-        fsm.registerTransition(fsmStates["goToPose"], fsmStates["informNao"], 0)
-        fsm.registerTransition(fsmStates["informNao"], fsmStates["waitForMessage"], 0)
-
+        fsm.registerState(pushBehaviour(fsmStates["push"]), fsmStates["push"])
+        fsm.registerState(takeBehaviour(fsmStates["take"]), fsmStates["take"])
+        fsm.registerState(InformBehaviour(fsmStates["inform"]), fsmStates["inform"])
+        fsm.registerState(InformBehaviour(fsmStates["put"]), fsmStates["put"])
+        
+        
         # transition succession if message received is goNear
         fsm.registerTransition(fsmStates["waitForMessage"], fsmStates["getPosition"], WaitMessageBehaviour.goNear)
         fsm.registerTransition(fsmStates["getPosition"], fsmStates["transformPosition"], 0)
@@ -99,14 +113,40 @@ class TurtleAgent(Agent):
                                TestIfNearOtherBehaviour.Near)
         fsm.registerTransition(fsmStates["testIfNear"], fsmStates["getPosition"],
                                TestIfNearOtherBehaviour.NotNear)
-                
+        
+        """ newly added fonctionnalities
+            simple actions: goTo, move, take, push
+            complex actions requesting a plan: planExecute
+        """
+        # transition succession if message received is goTo
+        fsm.registerTransition(fsmStates["waitForMessage"],fsmStates["goToPose"],WaitMessageBehaviour.goTo)
+        fsm.registerTransition(fsmStates["goToPose"],fsmStates["inform"],0)
+        fsm.registerTransition(fsmStates["inform"], fsmStates["waitForMessage"], 0)
+        
         # transition succession if message received is move
-        fsm.registerTransition(fsmStates["waitForMessage"],fsmStates["push"],WaitMessageBehaviour.pushTheBox)
-        fsm.registerTransition(fsmStates["push"], fsmStates["waitForMessage"], 0)
+        fsm.registerTransition(fsmStates["waitForMessage"],fsmStates["move"],WaitMessageBehaviour.move)
+        fsm.registerTransition(fsmStates["move"],fsmStates["inform"],0)
+        fsm.registerTransition(fsmStates["inform"], fsmStates["waitForMessage"], 0)
 
+        # transition succession if message received is push
+        fsm.registerTransition(fsmStates["waitForMessage"],fsmStates["push"],WaitMessageBehaviour.push)
+        fsm.registerTransition(fsmStates["push"],fsmStates["inform"],0)
+        fsm.registerTransition(fsmStates["inform"], fsmStates["waitForMessage"], 0)
+        
+        # transition succession if message received is take
+        fsm.registerTransition(fsmStates["waitForMessage"],fsmStates["take"],WaitMessageBehaviour.take)
+        fsm.registerTransition(fsmStates["take"],fsmStates["inform"],0)
+        fsm.registerTransition(fsmStates["inform"], fsmStates["waitForMessage"], 0)
+        
+         # transition succession if message received is put
+        fsm.registerTransition(fsmStates["waitForMessage"],fsmStates["put"],WaitMessageBehaviour.put)
+        fsm.registerTransition(fsmStates["put"],fsmStates["inform"],0)
+        fsm.registerTransition(fsmStates["inform"], fsmStates["waitForMessage"], 0)
+        
         # plan execution
         fsm.registerTransition(fsmStates["waitForMessage"],fsmStates["planExecute"],WaitMessageBehaviour.planExecute)
-        fsm.registerTransition(fsmStates["planExecute"], fsmStates["waitForMessage"], 0)
+        fsm.registerTransition(fsmStates["planExecute"],fsmStates["inform"],0)
+        fsm.registerTransition(fsmStates["inform"], fsmStates["waitForMessage"], 0)
         
         self.addBehaviour(fsm, None)
 

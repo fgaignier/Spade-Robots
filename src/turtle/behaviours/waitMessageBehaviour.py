@@ -6,15 +6,21 @@ class WaitMessageBehaviour(OneShotBehaviour):
 
     goTo = 0
     goNear = 1
-    pushTheBox = 2
+    push = 2
     planExecute = 3
     move = 4
+    take = 5
+    put = 6
 
     def process(self):
         print "wait for message behaviour"
         while True:
             message = self.myAgent.communicator.waitForMessage(None)
             print "waitForMessageBehaviour: message received by turtle ", message.getContent(), message.getOntology(), message.getPerformative()
+            print "sent by ", message.getSenderName()
+            print "I am ", self.myAgent.getName()
+            self.myAgent.messageSender = message.getSenderName()
+            
             # first we check the performative. REQUEST for actions, QUERY-IF for questions, INFORM for information
             if(message.getPerformative() == Vocabulary.REQUEST):
                 #then we check the ontology
@@ -38,8 +44,23 @@ class WaitMessageBehaviour(OneShotBehaviour):
                         break
                     if(content['object'] == Vocabulary.MOVE):
                         print "move message received"
-                        self.myAgent.moveParams = content['params']
+                        self.myAgent.parameters = content['params']
                         self._exitcode = WaitMessageBehaviour.move
+                        break
+                    if(content['object'] == Vocabulary.TAKE):
+                        print "take message received"
+                        self.myAgent.parameters = content['params']
+                        self._exitcode = WaitMessageBehaviour.take
+                        break
+                    if(content['object'] == Vocabulary.PUSH):
+                        print "push message received"
+                        self.myAgent.parameters = content['params']
+                        self._exitcode = WaitMessageBehaviour.push
+                        break
+                    if(content['object'] == Vocabulary.PUT):
+                        print "put message received"
+                        self.myAgent.parameters = content['params']
+                        self._exitcode = WaitMessageBehaviour.put
                         break
                 if(message.getOntology() == Vocabulary.GETPLAN):
                     content = Vocabulary.parseMessage(message.getContent())
@@ -51,9 +72,9 @@ class WaitMessageBehaviour(OneShotBehaviour):
                         print(plan)
                         self.myAgent.plan = plan
                         self._exitcode = WaitMessageBehaviour.planExecute
-                    if(content['object'] == Vocabulary.TAKEOBJECT):
+                    if(content['object'] == Vocabulary.TAKE):
                         for i in range(1,3):
-                            plan = self.myAgent.planer.getActionPlan(Vocabulary.TAKEOBJECT)
+                            plan = self.myAgent.planer.getActionPlan(Vocabulary.TAKE)
                             if plan:
                                 break;
                         print(plan)

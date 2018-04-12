@@ -2,6 +2,7 @@ object(a).
 object(b).
 object(c).
 robot(samira).
+robot(raphael).
 position(sofa).
 position(principale).
 position(chair).
@@ -31,6 +32,21 @@ adds(put(R, X, On), [on(X, On), handempty(R), clear(X)], _ , robot) :-
 deletes(put(R, X, On), [holding(R,X), free(On)], robot) :- 
 			object(X), robot(R), support(On).
 
+% push
+can(push(R, X, D), [handempty(R), at(R, At), at(X, At), free(X)], robot) :-
+			object(X), robot(R), position(At).
+adds(push(R, X, D), [atD(R, At, D), atD(X, At, D)], _ , robot) :- 
+			robot(R), object(X), position(At).
+deletes(push(R, X, D), [at(R, At), at(X, At)], robot) :- 
+			object(X), robot(R), position(At).
+
+% move
+can(move(R, D), [handempty(R), at(R, At), at(X, At), free(X)], robot) :-
+			object(X), robot(R), position(At).
+adds(move(R, D), [atD(R, At, D), atD(X, At, D)], _ , robot) :- 
+			robot(R), object(X), position(At).
+deletes(move(R, D), [at(R, At), at(X, At)], robot) :- 
+			object(X), robot(R), position(At).
 
 
 /*definition de scenaris pour les robots: */

@@ -24,7 +24,11 @@ if __name__ == "__main__":
 
     samira = TurtleAgent(config1["agentName"], config1["plateformIp"], config1["plateformSecret"],
                          config1["graphplan"], config1["actionsplan"], config1["knowledge"])
-    samira.start()
+    try:
+        samira.start()
+    except:
+        print "termination of program"
+        
     """
     print config2["agentName"]
     print config2["plateformIp"]

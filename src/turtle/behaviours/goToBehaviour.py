@@ -8,16 +8,16 @@ class goToBehaviour(OneShotBehaviour):
     GOAL_NON_REACHED = 0
     #navigator = GoToPose()
     
-    def __init__(self, name, goal):
+    def __init__(self, name):
         OneShotBehaviour.__init__(self, name)
         self.navigator = GoToPose()
-        self.goal = goal
 
     def process(self):
         print "GoToBehaviour"
+        goal = self.myAgent.parameters[0]
         # to be fixed. Quaterion should be given as a parameter
         # default value will be used
-        if self.navigator.goTo(self.goal):
+        if self.navigator.goTo(goal):
             self._exitcode = goToBehaviour.GOAL_REACHED
             print  "goal reached"
         else:

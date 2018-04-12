@@ -66,15 +66,9 @@ class Move:
     def __init__(self):
         self.cmd_vel = rospy.Publisher('cmd_vel_mux/input/navi', Twist, queue_size=10)
 
-    def push(self, distance):
+    def push(self, distance, angle):
         print "push the bow on ", distance
-        r = rospy.Rate(10)
-        move_cmd = Twist()
-        move_cmd.linear.x = -0.1
-        #move_cmd.angular.z = 0
-        for i in range(distance):
-            self.cmd_vel.publish(move_cmd)
-            r.sleep()
+        self.move(distance, angle)
         print "finished pushing the box"
 
     # enables to go in a given direction (negative distance for backwards)
@@ -88,7 +82,8 @@ class Move:
         else:
             move_cmd.linear.x = 0.1
             
-        move_cmd.angular.x = angle
+        distance = abs(distance)*10
+        move_cmd.angular.x = angle/distance
 
         for i in range(distance):
             self.cmd_vel.publish(move_cmd)

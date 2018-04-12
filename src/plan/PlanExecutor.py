@@ -7,7 +7,9 @@ from spadeutils.behaviours.spadeBehaviours import OneShotBehaviour
 from Queue import Queue
 from turtle.services.navigationService import GoToPose
 from turtle.services.navigationService import Move
+from common.Vocabulary import Vocabulary
 
+import spade
 
 
 class PlanExecutor(OneShotBehaviour):
@@ -46,8 +48,14 @@ class PlanExecutor(OneShotBehaviour):
         self.addPlan(self.myAgent.plan)
         while not self.waitingActions.empty():
             action = self.waitingActions.get(True)
+            robot = action.getParameter(0)
             try:
-                action.run()
+                if robot == self.myAgent.name:
+                    print "will execute action myself"
+                    action.run()
+                else:
+                    print "will send action to ", robot
+                    action.dispatch()
             except AttributeError:
                 print("no such robot action: " + action.name)
                 print("entire plan cancelled")
@@ -60,6 +68,9 @@ class action(object):
         self.myAgent = turtleAgent
         self.arm = turtleAgent.arm
         
+    def getParameter(self, number):
+        return self.parameters[number]
+    
     # dynamic call of function
     # if the function does not exist, the exception is caught in the behaviour
     # and the action queue emptied
@@ -93,5 +104,22 @@ class action(object):
         moveService = Move()
         moveService.move(dist, angle)
         
-        
+    # this is when the first parameter is different from the robot executing the plan
+    # the action is sent to the robot in charge of executing the task
+    def dispatch(self):
+        print("sending action request to: ", self.parameters[0])
+        ct = Vocabulary.buildMessage(self.name, self.parameters)
+        dest = Vocabulary.getAid(self.parameters[0], self.myAgent.getHostByName())
+        print("message: ", ct, "to ", dest)
+        message = spade.ACLMessage.ACLMessage()
+        message.setPerformative(Vocabulary.REQUEST)
+        message.setOntology(Vocabulary.TURTLEMOVE)
+        message.setContent(ct)
+        message.addReceiver(dest)
+        self.myAgent.communicator.sendMessage(message)
+        message = self.myAgent.communicator.waitForMessage(None)
+        if message.getPerformative() == Vocabulary.INFORM and message.getContent() == Vocabulary.DONE:
+            return True
+        else:
+            return False  
         

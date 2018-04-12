@@ -10,9 +10,9 @@ class moveBehaviour(OneShotBehaviour):
 
     def process(self):
         print "moveBehaviour"
-        params = self.myAgent.moveParams
-        distance = params[0]
-        angle = params[1]
+        params = self.myAgent.parameters
+        distance = int(params[0])
+        angle = float(params[1])
         print "moving on distance ", distance, "with angel ", angle 
         self.navigator.move(distance, angle)
             

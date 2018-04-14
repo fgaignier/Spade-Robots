@@ -21,6 +21,7 @@ from turtle.behaviours.moveBehaviour import moveBehaviour
 from turtle.behaviours.pushBehaviour import pushBehaviour
 from turtle.behaviours.takeBehaviour import takeBehaviour
 from turtle.behaviours.informBehaviour import InformBehaviour
+from turtle.behaviours.putBehaviour import putBehaviour
 
 from plan.PlanExecutor import PlanExecutor
 #from turtle.services.armService import Arm
@@ -81,7 +82,7 @@ class TurtleAgent(Agent):
                      "take": 10, "push": 11, "inform": 12, "put": 13}
         
         fsm = spade.Behaviour.FSMBehaviour()
-
+        
         fsm.registerFirstState(WaitMessageBehaviour(fsmStates["waitForMessage"]),fsmStates["waitForMessage"])
         fsm.registerState(GoToPoseBehaviour(fsmStates["goToPose"]),fsmStates["goToPose"])
         fsm.registerState(InformNaoBehaviour(fsmStates["informNao"]), fsmStates["informNao"])
@@ -93,11 +94,10 @@ class TurtleAgent(Agent):
                           fsmStates["testIfNear"])
         fsm.registerState(moveBehaviour(fsmStates["move"]), fsmStates["move"])
         fsm.registerState(PlanExecutor(), fsmStates["planExecute"])
-        fsm.registerState(pushBehaviour(fsmStates["push"]), fsmStates["push"])
         fsm.registerState(takeBehaviour(fsmStates["take"]), fsmStates["take"])
+        fsm.registerState(pushBehaviour(fsmStates["push"]), fsmStates["push"])
         fsm.registerState(InformBehaviour(fsmStates["inform"]), fsmStates["inform"])
-        fsm.registerState(InformBehaviour(fsmStates["put"]), fsmStates["put"])
-        
+        fsm.registerState(putBehaviour(fsmStates["put"]), fsmStates["put"])
         
         # transition succession if message received is goNear
         fsm.registerTransition(fsmStates["waitForMessage"], fsmStates["getPosition"], WaitMessageBehaviour.goNear)
@@ -118,6 +118,7 @@ class TurtleAgent(Agent):
             simple actions: goTo, move, take, push
             complex actions requesting a plan: planExecute
         """
+        
         # transition succession if message received is goTo
         fsm.registerTransition(fsmStates["waitForMessage"],fsmStates["goToPose"],WaitMessageBehaviour.goTo)
         fsm.registerTransition(fsmStates["goToPose"],fsmStates["inform"],0)
@@ -138,7 +139,7 @@ class TurtleAgent(Agent):
         fsm.registerTransition(fsmStates["take"],fsmStates["inform"],0)
         fsm.registerTransition(fsmStates["inform"], fsmStates["waitForMessage"], 0)
         
-         # transition succession if message received is put
+        # transition succession if message received is put
         fsm.registerTransition(fsmStates["waitForMessage"],fsmStates["put"],WaitMessageBehaviour.put)
         fsm.registerTransition(fsmStates["put"],fsmStates["inform"],0)
         fsm.registerTransition(fsmStates["inform"], fsmStates["waitForMessage"], 0)

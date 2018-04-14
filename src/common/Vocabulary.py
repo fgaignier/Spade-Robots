@@ -19,11 +19,12 @@ class Vocabulary(object):
     GOTO = "goTo"
     PUSH = "push"
     GATHER = "goNear"
-    GETCOFFEE = "getCoffee"
-    TAKE= "take"
+    GETCOFFEE = "getCoffee" # plan
+    TAKE= "take" # both plan and action
     MOVE = "move"
     DONE = "finished"
     PUT = "put"
+    CLEAN = "clean" # plan
     
     #ontologies: simple actions: Turtlemove. Complex GETPLAN
     TURTLEMOVE = "turtleMove"

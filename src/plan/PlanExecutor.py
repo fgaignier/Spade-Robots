@@ -91,14 +91,19 @@ class action(object):
         goService = GoToPose()
         goService.goTo(to["position"], to["quaterion"])
         
-    def take(self, robot, obj, place):
-        print(robot + " taking: " + obj + " At: " + place)
+    def take(self, robot, obj, place, pos):
+        print(robot + " taking: " + obj + " At: " + place + " On: " + pos)
         self.arm.take()
         
     def put(self, robot, obj, place):
         print(robot + " putting: " + obj + " On: " + place)
         self.arm.put()
     
+    def push(self, robot, obj, distance):
+        print(robot + " pushing: " + obj + " On: " + distance)
+        moveService = Move()
+        moveService.move(distance, 0)
+        
     def move(self, robot, dist, angle):
         print(robot + " moving on distance: " + dist + " With angle: " + angle)
         moveService = Move()

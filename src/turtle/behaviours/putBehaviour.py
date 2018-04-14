@@ -2,7 +2,7 @@
 
 from spadeutils.behaviours.spadeBehaviours import OneShotBehaviour
 
-class takeBehaviour(OneShotBehaviour):
+class putBehaviour(OneShotBehaviour):
     
     def __init__(self, name):
         OneShotBehaviour.__init__(self, name)

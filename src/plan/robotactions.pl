@@ -1,20 +1,33 @@
-object(a).
-object(b).
-object(c).
+% one object: the cup
+object(cup).
+
+% two robots: raphael and samira
 robot(samira).
 robot(raphael).
+
+% positions: sofa, principale, salle2, chair
 position(sofa).
 position(principale).
+position(salle2).
 position(chair).
+
+% support: table, box
 support(table).
+support(box).
+support(chair).
+
+% distance
+distance(50).
+distance(100).
+distance(-70).
 
 % take
-can(take(R, X, At), [handempty(R), clear(X), at(R,At), at(X,At)], robot) :- 
-				object(X), robot(R), position(At).
-adds(take(R, X, At), [holding(R,X)], _ , robot) :- 
-			object(X), robot(R).
-deletes(take(R, X, At), [handempty(R), clear(X)], robot) :- 
-			object(X), robot(R).
+can(take(R, X, At, On), [handempty(R), clear(X), at(R,At), at(X,At), on(X, On)], robot) :- 
+				object(X), robot(R), position(At), support(On).
+adds(take(R, X, At, On), [holding(R,X), free(On)], _ , robot) :- 
+			object(X), robot(R), support(On).
+deletes(take(R, X, At, On), [handempty(R), clear(X)], robot) :- 
+			object(X), robot(R), support(On).
 
 % goTo
 can(goTo(R, From, To), [at(R, From)], robot) :-
@@ -34,24 +47,29 @@ deletes(put(R, X, On), [holding(R,X), free(On)], robot) :-
 
 % push
 can(push(R, X, D), [handempty(R), at(R, At), at(X, At), free(X)], robot) :-
-			object(X), robot(R), position(At).
+			support(X), robot(R), position(At), distance(D).
 adds(push(R, X, D), [atD(R, At, D), atD(X, At, D)], _ , robot) :- 
-			robot(R), object(X), position(At).
+			robot(R), support(X), position(At), distance(D).
 deletes(push(R, X, D), [at(R, At), at(X, At)], robot) :- 
-			object(X), robot(R), position(At).
+			support(X), robot(R), position(At), distance(D).
 
 % move
-can(move(R, D), [handempty(R), at(R, At), at(X, At), free(X)], robot) :-
-			object(X), robot(R), position(At).
-adds(move(R, D), [atD(R, At, D), atD(X, At, D)], _ , robot) :- 
-			robot(R), object(X), position(At).
-deletes(move(R, D), [at(R, At), at(X, At)], robot) :- 
-			object(X), robot(R), position(At).
+
+can(move(R, D), [at(R,At)], robot) :- robot(R), position(At), distance(D).
+adds(move(R, D), [atD(R, At, D)], _ , robot) :- robot(R), position(At), distance(D).
+deletes(move(R, D), [at(R, At)], robot) :- robot(R), position(At), distance(D).
 
 
 /*definition de scenaris pour les robots: */
 /* premier: getCoffee (prendre le gobelet dans une piece et l'amener dans une autre et le poser sur une boite */
 
-getCoffee(P):- plan([handempty(samira), clear(a), at(samira, principale), at(a, chair), at(table, sofa), free(table)], [handempty(samira), on(a, table)], robot, P).
-takeObject(P):- plan([handempty(samira), clear(a), at(samira, principale), at(a, principale)], [holding(samira, a)], robot, P).
+getCoffee(P):- plan([handempty(samira), clear(cup), on(cup, chair), at(samira, principale), at(cup, chair), at(table, sofa), free(table)], [handempty(samira), on(cup, table)], robot, P).
+/* second : prendre un objet */
+takeObject(P):- plan([handempty(samira), clear(cup), at(samira, principale), at(cup, principale), on(cup,box)], [holding(samira, cup)], robot, P).
+/* troisieme : clean room (consiste a bouger une boite en ayant retire l'objet qui est dessus. Doit faire intervenir 2 robots */
+clean(P):- plan([handempty(samira), handempty(raphael), clear(cup), on(cup,box), at(cup, principale), at(samira, principale), at(box, principale), at(raphael, salle2)], [atD(box, principale, 100), holding(samira, cup)], robot, P).
+
+
+
+
 

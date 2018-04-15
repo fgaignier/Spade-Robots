@@ -6,7 +6,7 @@ import actionlib
 from actionlib_msgs.msg import GoalStatus
 from geometry_msgs.msg import Pose, Point, Quaternion
 from geometry_msgs.msg import Twist
-
+from turtle.services.positionService import PositionService
 
 class GoToPose:
     def __init__(self):
@@ -52,7 +52,12 @@ class GoToPose:
             result = True
         else:
             self.move_base.cancel_goal()
-
+        
+        # will be used to evaluate the difference between goal and reality
+        print "goal sent", pos, quat
+        print "goal reached:"
+        print PositionService.getCurrentPositionAsMap()
+        
         self.goal_sent = False
         return result
    

@@ -24,6 +24,6 @@ if __name__ == "__main__":
                          config1["graphplan"], config1["actionsplan"], config1["knowledge"])
     try:
         turtle.start()
-    except:
+    except KeyboardInterrupt:
         print "termination of program"
         

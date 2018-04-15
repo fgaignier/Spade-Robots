@@ -64,30 +64,13 @@ class WaitMessageBehaviour(OneShotBehaviour):
                         break
                 if(message.getOntology() == Vocabulary.GETPLAN):
                     content = Vocabulary.parseMessage(message.getContent())
-                    if(content['object'] == Vocabulary.GETCOFFEE):
-                        for i in range(1,3):
-                            plan = self.myAgent.planer.getActionPlan(Vocabulary.GETCOFFEE)
-                            if plan:
-                                break;
-                        print(plan)
-                        self.myAgent.plan = plan
-                        self._exitcode = WaitMessageBehaviour.planExecute
-                    if(content['object'] == Vocabulary.TAKE):
-                        for i in range(1,3):
-                            plan = self.myAgent.planer.getActionPlan(Vocabulary.TAKE)
-                            if plan:
-                                break;
-                        print(plan)
-                        self.myAgent.plan = plan
-                        self._exitcode = WaitMessageBehaviour.planExecute
-                    break
-                    if(content['object'] == Vocabulary.CLEAN):
-                        for i in range(1,3):
-                            plan = self.myAgent.planer.getActionPlan(Vocabulary.CLEAN)
-                            if plan:
-                                break;
-                        print(plan)
-                        self.myAgent.plan = plan
-                        self._exitcode = WaitMessageBehaviour.planExecute
+                    objective = content['object']
+                    for i in range(1,3):
+                        plan = self.myAgent.planer.getActionPlan(objective)
+                        if plan:
+                            break;
+                    print(plan)
+                    self.myAgent.plan = plan
+                    self._exitcode = WaitMessageBehaviour.planExecute
                     break
         print "wait for message behaviour exited"

@@ -23,7 +23,7 @@ from turtle.behaviours.takeBehaviour import takeBehaviour
 from turtle.behaviours.informBehaviour import InformBehaviour
 from turtle.behaviours.putBehaviour import putBehaviour
 
-from plan.PlanExecutor import PlanExecutor
+from turtle.behaviours import PlanExecutor.PlanExecutor
 #from turtle.services.armService import Arm
 from turtle.services.armServicePub import ArmPub
 

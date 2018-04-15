@@ -88,12 +88,17 @@ class Move:
             move_cmd.linear.x = 0.1
             
         distance = abs(distance)*10
-        move_cmd.angular.x = angle/distance
+        move_cmd.angular.z = angle/distance
 
+        print "position before moving:"
+        print PositionService.getCurrentPositionAsMap()
+        
         for i in range(distance):
             self.cmd_vel.publish(move_cmd)
             r.sleep()
         print "finished moving"
+        print "position after moving:"
+        print PositionService.getCurrentPositionAsMap()
         
     def shutdown(self):
         # stop turtlebot

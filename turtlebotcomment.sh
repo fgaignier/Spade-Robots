@@ -14,7 +14,7 @@ roslaunch turtlebot_teleop keyboard_teleop.launch
 # outil pour obtenir la position de la tortue
 #soit SSH, soit on source le fichier t1.sh
 
-rosrun tf tf_echo /map /base-link
+rosrun tf tf_echo /map /base_link
 
 # outil pour simuler un turtlebot sur ma machine
 sudo apt-get install ros-kinetic-turtlebot-gazebo 

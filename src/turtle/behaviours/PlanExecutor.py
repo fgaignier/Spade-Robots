@@ -117,9 +117,10 @@ class action(object):
     # this is when the first parameter is different from the robot executing the plan
     # the action is sent to the robot in charge of executing the task
     def dispatch(self):
-        print("sending action request to: ", self.parameters[0])
+        print "sending action request to: ", self.parameters[0]
         ct = Vocabulary.buildMessage(self.name, self.parameters)
-        dest = Vocabulary.getAid(self.parameters[0], self.myAgent.getHostByName())
+        # to be fixed. Should get the host of the SPADE engine
+        dest = Vocabulary.getAid(self.parameters[0], "192.168.43.13")
         print("message: ", ct, "to ", dest)
         message = spade.ACLMessage.ACLMessage()
         message.setPerformative(Vocabulary.REQUEST)

@@ -71,7 +71,7 @@ class Move:
     def __init__(self):
         self.cmd_vel = rospy.Publisher('cmd_vel_mux/input/navi', Twist, queue_size=10)
 
-    def push(self, distance, angle):
+    def push(self, distance, angle=0):
         print "push the bow on ", distance
         self.move(distance, angle)
         print "finished pushing the box"

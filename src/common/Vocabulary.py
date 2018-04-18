@@ -55,15 +55,20 @@ class Vocabulary(object):
     @staticmethod
     def buildMessage(name, params):
         message = name + "("
-        for p in params:
-            message = message + p + ","
-        message = message.rstrip(',')
+        if name == Vocabulary.GOTO:
+            message = message + params[2]
+        elif name == Vocabulary.PUSH:
+            message = message + params[2]
+        elif name == Vocabulary.MOVE:
+            message = message + params[2]
+        else:
+            ""
         message = message + ")"
         return message
     
     @staticmethod
     def getAid(name, host):
-        return aid(name + host, ["xmpp://" + name + "@" + host])
+        return aid(name + "@" + host, ["xmpp://" + name + "@" + host])
     
     @staticmethod
     def getAidfromName(name):

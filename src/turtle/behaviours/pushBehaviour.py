@@ -13,8 +13,8 @@ class pushBehaviour(OneShotBehaviour):
     def process(self):
         print "PushBehaviour"
         distance = self.myAgent.parameters[0]
-        angle = self.myAgent.parameters[1]
-        self.navigator.push(distance, angle)
+        #angle = self.myAgent.parameters[1]
+        self.navigator.push(distance)
             
     def onEnd(self):
         print "end of PushBehaviour"

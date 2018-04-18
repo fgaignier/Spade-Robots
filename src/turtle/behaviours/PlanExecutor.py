@@ -45,12 +45,16 @@ class PlanExecutor(OneShotBehaviour):
         
 
     def process(self):
+        myFullName = self.myAgent.getname()
+        spl1 = myFullName.split('@')
+        myName = spl1[0]
+        print "in plan executor: myName= ", myName
         self.addPlan(self.myAgent.plan)
         while not self.waitingActions.empty():
             action = self.waitingActions.get(True)
             robot = action.getParameter(0)
             try:
-                if robot == self.myAgent.name:
+                if robot == myName:
                     print "will execute action myself"
                     action.run()
                 else:

@@ -17,9 +17,9 @@ class WaitMessageBehaviour(OneShotBehaviour):
         while True:
             message = self.myAgent.communicator.waitForMessage(None)
             print "waitForMessageBehaviour: message received by turtle ", message.getContent(), message.getOntology(), message.getPerformative()
-            print "sent by ", message.getSenderName()
+            print "sent by ", message.getSender()
             print "I am ", self.myAgent.getName()
-            self.myAgent.messageSender = message.getSenderName()
+            self.myAgent.messageSender = message.getSender()
             
             # first we check the performative. REQUEST for actions, QUERY-IF for questions, INFORM for information
             if(message.getPerformative() == Vocabulary.REQUEST):

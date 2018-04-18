@@ -80,7 +80,7 @@ class Communicator(Behaviour):
     # prerequisit. The turtle is at the right position
     def sendPushOrder(self, turtleName, distance):
         msg = ACLMessage()
-        msg.setOntology(Vocabulary.TURTLEPUSH)
+        msg.setOntology(Vocabulary.PUSH)
         msg.setPerformative(Vocabulary.REQUEST)
         content = Vocabulary.PUSH + "(" + distance + ")"
         msg.setContent(content)

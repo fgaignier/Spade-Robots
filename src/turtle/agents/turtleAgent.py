@@ -23,8 +23,8 @@ from turtle.behaviours.takeBehaviour import takeBehaviour
 from turtle.behaviours.informBehaviour import InformBehaviour
 from turtle.behaviours.putBehaviour import putBehaviour
 
-from turtle.behaviours import PlanExecutor.PlanExecutor
-#from turtle.services.armService import Arm
+from turtle.behaviours.PlanExecutor import PlanExecutor
+from arbotix_python.arbotix import ArbotiX
 from turtle.services.armServicePub import ArmPub
 
 class TurtleAgent(Agent):
@@ -35,10 +35,12 @@ class TurtleAgent(Agent):
         
         print "will init rosnode with name: " + name
         rospy.init_node(name)
-        
-        # init arm
-        #self.arm = Arm()
-        #self.arm.goToPosition(Arm.POSITION_RELAX)
+
+        # set the speed of each servo
+        device = ArbotiX("/dev/ttyUSB0")        
+        for i in range(0,5):
+            device.setSpeed(i, 20)
+
         
         self.arm = ArmPub()
         self.arm.goToPosition(ArmPub.POSITION_RELAX)

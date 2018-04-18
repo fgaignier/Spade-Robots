@@ -65,5 +65,9 @@ class Vocabulary(object):
     def getAid(name, host):
         return aid(name + host, ["xmpp://" + name + "@" + host])
     
+    @staticmethod
+    def getAidfromName(name):
+        return aid(name, ["xmpp://" + name])
+    
         
             

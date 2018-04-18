@@ -87,8 +87,8 @@ class Move:
         else:
             move_cmd.linear.x = 0.1
             
-        distance = abs(distance)*10
-        move_cmd.angular.z = angle/distance
+        distance = abs(distance)
+        move_cmd.angular.z = angle
 
         print "position before moving:"
         print PositionService.getCurrentPositionAsMap()

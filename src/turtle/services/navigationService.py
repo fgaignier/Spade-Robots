@@ -82,19 +82,24 @@ class Move:
         print "move on ", distance
         r = rospy.Rate(10)
         move_cmd = Twist()
+        # let's go forward at 0.1 m/s
         if distance < 0:
             move_cmd.linear.x = -0.1
+            move_cmd.linear.y = -0.1
         else:
             move_cmd.linear.x = 0.1
+            move_cmd.linear.y = 0.1
             
         distance = abs(distance)
-        move_cmd.angular.z = angle
+        # let's turn at x radians/s
+        move_cmd.angular.z = angle/distance
 
         print "position before moving:"
         print PositionService.getCurrentPositionAsMap()
         
         for i in range(distance):
             self.cmd_vel.publish(move_cmd)
+            # wait for 0.1 seconds (10 HZ) and publish again
             r.sleep()
         print "finished moving"
         print "position after moving:"

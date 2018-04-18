@@ -45,9 +45,10 @@ class PlanExecutor(OneShotBehaviour):
         
 
     def process(self):
-        myFullName = self.myAgent.getname()
-        spl1 = myFullName.split('@')
-        myName = spl1[0]
+        #myFullName = self.myAgent.getname()
+        #spl1 = myFullName.split('@')
+        #myName = spl1[0]
+        myName = self.myAgent.name
         print "in plan executor: myName= ", myName
         self.addPlan(self.myAgent.plan)
         while not self.waitingActions.empty():

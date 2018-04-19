@@ -60,6 +60,8 @@ class Vocabulary(object):
         elif name == Vocabulary.PUSH:
             message = message + params[2]
         elif name == Vocabulary.MOVE:
+            message = message + params[1]
+            message = message + " , "
             message = message + params[2]
         else:
             ""

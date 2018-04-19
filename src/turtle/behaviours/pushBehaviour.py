@@ -1,6 +1,6 @@
 
 from spadeutils.behaviours.spadeBehaviours import OneShotBehaviour
-from turtle.services.navigationService import Move
+from turtle.services.navigationService import Move, GoToPose
 
 class pushBehaviour(OneShotBehaviour):
     GOAL_REACHED = 0
@@ -8,7 +8,9 @@ class pushBehaviour(OneShotBehaviour):
     
     def __init__(self, name):
         OneShotBehaviour.__init__(self, name)
-        self.navigator = Move()
+        # chose here what method you want to use
+        #self.navigator = Move()
+        self.navigator = GoToPose()
 
     def process(self):
         print "PushBehaviour"

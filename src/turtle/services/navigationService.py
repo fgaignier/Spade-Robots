@@ -128,14 +128,18 @@ class Position:
     
     #returns an angle to the desired direction in radians
     @staticmethod
-    def correctDirection(self, target, position):
+    def diffInDirection(self, target, position):
         quat = target["quaterion"]
         quat_target =  Quaternion(quat['r1'], quat['r2'], quat['r3'], quat['r4'])
         quat = position["quaterion"]
         quat_pos = Quaternion(quat['r1'], quat['r2'], quat['r3'], quat['r4'])
         angles_target = transformations.euler_from_quaternion(quat_target)
         angles_pos = transformations.euler_from_quaternion(quat_pos)
-        return angles_target[2]- angles_pos[2]
+        print "angles target = ", angles_target
+        print "angles position = ", angles_pos
+        diff = angles_target[2]- angles_pos[2]
+        print "difference in angle between expected and realised = ", diff 
+        return diff
         
 # offers the same methods as GoToPos, but with a different method
 # we implemented both to compare and chose the best one
@@ -175,6 +179,25 @@ class Move:
         print "position after moving:"
         print PositionService.getCurrentPositionAsMap()
         
+    #rotate from an angle in degre
+    def rotateD(self, angle_in_degre):
+        self.rotateR(math.radians(angle_in_degre))
+        
+    def rotateR(self, angle_in_radian):
+        r = rospy.Rate(10)
+        turn_cmd = Twist()
+        turn_cmd.linear.x = 0
+        turn_cmd.angular.z = angle_in_radian
+        rospy.loginfo("Turning")
+        for x in range(0,10):
+            self.cmd_vel.publish(turn_cmd)
+            r.sleep()
+                    
+    # corection of position
+    # first we correct x (diff(x)/cos(pi/2-angle)= distance to correct x
+    # then we correct the angle with diffInDirection and rotate
+    # then we correct y (diff(y) = distance to correct y
+    
     def shutdown(self):
         # stop turtlebot
         rospy.loginfo("Stop TurtleBot")

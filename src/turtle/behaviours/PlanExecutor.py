@@ -121,8 +121,9 @@ class action(object):
     def dispatch(self):
         print "sending action request to: ", self.parameters[0]
         ct = Vocabulary.buildMessage(self.name, self.parameters)
-        # to be fixed. Should get the host of the SPADE engine
-        dest = Vocabulary.getAid(self.parameters[0], "192.168.43.13")
+        host = self.myAgent.host
+        print "hostname is : " + host
+        dest = Vocabulary.getAid(self.parameters[0], host)
         print("message: ", ct, "to ", dest)
         message = spade.ACLMessage.ACLMessage()
         message.setPerformative(Vocabulary.REQUEST)

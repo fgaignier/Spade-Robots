@@ -7,8 +7,8 @@ class moveBehaviour(OneShotBehaviour):
     def __init__(self, name):
         OneShotBehaviour.__init__(self, name)
         # chose here what method you want to use
-        #self.navigator = Move()
-        self.navigator = GoToPose()
+        self.navigator = Move()
+        #self.navigator = GoToPose()
 
     def process(self):
         print "moveBehaviour"

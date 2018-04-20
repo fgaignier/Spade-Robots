@@ -9,12 +9,12 @@ class pushBehaviour(OneShotBehaviour):
     def __init__(self, name):
         OneShotBehaviour.__init__(self, name)
         # chose here what method you want to use
-        #self.navigator = Move()
-        self.navigator = GoToPose()
+        self.navigator = Move()
+        #self.navigator = GoToPose()
 
     def process(self):
         print "PushBehaviour"
-        distance = self.myAgent.parameters[0]
+        distance = int(self.myAgent.parameters[0])
         #angle = self.myAgent.parameters[1]
         self.navigator.push(distance)
             

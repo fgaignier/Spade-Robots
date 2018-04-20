@@ -70,7 +70,7 @@ getCoffee(P):- P= [[goTo(samira, principale, chair)], [take(samira, cup, chair, 
 takeObject(P):- plan([handempty(samira), clear(cup), at(samira, principale), at(cup, principale), on(cup,box)], [holding(samira, cup)], robot, P).
 /* troisieme : clean room (consiste a bouger une boite en ayant retire l'objet qui est dessus. Doit faire intervenir 2 robots */
 /*clean(P):- plan([handempty(samira), handempty(raphael), clear(cup), on(cup,box), at(cup, principale), at(samira, principale), at(box, principale), at(raphael, salle2)], [atD(box, principale, 100), holding(samira, cup)], robot, P). */
-clean(P):- P= [[goTo(samira, start, box), take(samira, cup, box, carton),goTo(samira, box, start), goTo(raphael, tv, box)], [push(raphael, box, 20)]].
+clean(P):- P= [[goTo(samira, start, box), take(samira, cup, box, carton),goTo(samira, box, start), goTo(raphael, tv, box)], [push(raphael, box, -20)]].
 
 
 

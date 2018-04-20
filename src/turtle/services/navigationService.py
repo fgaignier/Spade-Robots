@@ -112,7 +112,7 @@ class Position:
     
     # takes an angle in degre and returns the quaternion associated
     @staticmethod
-    def generateQuaternionD(self, angle_in_degre):
+    def generateQuaternionD(angle_in_degre):
         #convert euler to quaternion and save in new variable quat
         quat = transformations.quaternion_from_euler(0, 0, math.radians(angle_in_degre))
         #return quaternion
@@ -120,7 +120,7 @@ class Position:
     
     # takes an angle in degre and returns the quaternion associated
     @staticmethod
-    def generateQuaternionR(self, angle_in_radian):
+    def generateQuaternionR(angle_in_radian):
         #convert euler to quaternion and save in new variable quat
         quat = transformations.quaternion_from_euler(0, 0, angle_in_radian)
         #return quaternion
@@ -128,16 +128,17 @@ class Position:
     
     #returns an angle to the desired direction in radians
     @staticmethod
-    def diffInDirection(self, target, position):
+    def diffInDirection(target, position):
         diff = Position.getDirection(target) - Position.getDirection(position)
         print "difference in angle between expected and realized = ", diff 
         return diff
     
     @staticmethod
-    def getDirection(self, position):
+    def getDirection(position):
         quat = position["quaterion"]
-        quat =  Quaternion(quat['r1'], quat['r2'], quat['r3'], quat['r4'])
-        angles = transformations.euler_from_quaternion(quat)
+        quater =  Quaternion(quat['r1'], quat['r2'], quat['r3'], quat['r4'])
+        #angles = transformations.euler_from_quaternion(quater)
+        angles = transformations.euler_from_quaternion([quat['r1'], quat['r2'], quat['r3'], quat['r4']])
         print "angles of position = ", angles
       
         print "direction (in radians) = ", angles[2] 
@@ -206,6 +207,8 @@ class Move:
         # must first check if difference is big enough 
         current_position = PositionService.getCurrentPositionAsMap()
         
+        # need to deal with negative Y
+        y = target["position"]["y"]
         diffX = target["position"]["x"] - current_position["position"]["x"]
         diffY = target["position"]["y"] - current_position["position"]["y"]
         
@@ -213,12 +216,12 @@ class Move:
         print "difference in Y in meters", diffY
         
         #convert in centimeters
-        diffX = diffX*100
-        diffY = diffY*100
+        diffX = int(round(diffX*100))
+        diffY = int(round(diffY*100))
         
         #if we are close enough from the desired position we do not do anything
         #in fact we should still correct the direction. To be fixed
-        if(diffX <5 and diffY <5):
+        if(abs(diffX) <5 and abs(diffY) <5):
             pass
         
         # rotates to face the X direction
@@ -229,7 +232,10 @@ class Move:
         # get desired angle
         dir= Position.getDirection(target)
         self.rotateR(dir)
-        self.move(diffY,0)
+        if y < 0:
+            self.move(-1*diffY,0)
+        else:
+            self.move(diffY,0)
     
     def shutdown(self):
         # stop turtlebot

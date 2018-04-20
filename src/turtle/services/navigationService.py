@@ -129,18 +129,20 @@ class Position:
     #returns an angle to the desired direction in radians
     @staticmethod
     def diffInDirection(self, target, position):
-        quat = target["quaterion"]
-        quat_target =  Quaternion(quat['r1'], quat['r2'], quat['r3'], quat['r4'])
-        quat = position["quaterion"]
-        quat_pos = Quaternion(quat['r1'], quat['r2'], quat['r3'], quat['r4'])
-        angles_target = transformations.euler_from_quaternion(quat_target)
-        angles_pos = transformations.euler_from_quaternion(quat_pos)
-        print "angles target = ", angles_target
-        print "angles position = ", angles_pos
-        diff = angles_target[2]- angles_pos[2]
-        print "difference in angle between expected and realised = ", diff 
+        diff = Position.getDirection(target) - Position.getDirection(position)
+        print "difference in angle between expected and realized = ", diff 
         return diff
-        
+    
+    @staticmethod
+    def getDirection(self, position):
+        quat = position["quaterion"]
+        quat =  Quaternion(quat['r1'], quat['r2'], quat['r3'], quat['r4'])
+        angles = transformations.euler_from_quaternion(quat)
+        print "angles of position = ", angles
+      
+        print "direction (in radians) = ", angles[2] 
+        return angles[2]
+    
 # offers the same methods as GoToPos, but with a different method
 # we implemented both to compare and chose the best one
 class Move:
@@ -153,7 +155,7 @@ class Move:
         print "finished pushing the box"
 
     # enables to go in a given direction (negative distance for backwards)
-    # give distance and angle in radians
+    # give distance in centimeters and angle in radians
     def move(self, distance, angle):
         print "move on ", distance, "with direction ", angle
         r = rospy.Rate(10)
@@ -194,9 +196,40 @@ class Move:
             r.sleep()
                     
     # corection of position
-    # first we correct x (diff(x)/cos(pi/2-angle)= distance to correct x
-    # then we correct the angle with diffInDirection and rotate
-    # then we correct y (diff(y) = distance to correct y
+    # first we detect if we are far off
+    # then go back to the X angle direction
+    # then we correct the X position
+    # then we rotate to the desire direction
+    # then we correct the y position
+    def correctPosition(self, target):
+        
+        # must first check if difference is big enough 
+        current_position = PositionService.getCurrentPositionAsMap()
+        
+        diffX = target["position"]["x"] - current_position["position"]["x"]
+        diffY = target["position"]["y"] - current_position["position"]["y"]
+        
+        print "difference in X in meters", diffX
+        print "difference in Y in meters", diffY
+        
+        #convert in centimeters
+        diffX = diffX*100
+        diffY = diffY*100
+        
+        #if we are close enough from the desired position we do not do anything
+        #in fact we should still correct the direction. To be fixed
+        if(diffX <5 and diffY <5):
+            pass
+        
+        # rotates to face the X direction
+        dir= Position.getDirection(current_position)
+        self.rotateR(-dir)
+        
+        self.move(diffX,0)
+        # get desired angle
+        dir= Position.getDirection(target)
+        self.rotateR(dir)
+        self.move(diffY,0)
     
     def shutdown(self):
         # stop turtlebot

@@ -98,6 +98,11 @@ class ArmPub:
         self.moveServo(pub,min_angle)
         
     def take(self):
+        # first goes in high position to attack the object from the top and not the side
+        self.goToPosition(ArmPub.POSITION_BRING)
+        # waits 2 seconds before closing the gripper
+        time.sleep(2)
+        # goes into take position
         self.goToPosition(self.POSITION_TAKE)
         # waits 2 seconds before closing the gripper
         time.sleep(2)

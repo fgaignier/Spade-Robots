@@ -144,6 +144,21 @@ class Position:
         print "direction (in radians) = ", angles[2] 
         return angles[2]
     
+    # returns the X and Y difference between two positions
+    @staticmethod
+    def diffInPosition(target, position):
+        diffX = target["position"]["x"] - position["position"]["x"]
+        diffY = target["position"]["y"] - position["position"]["y"]
+        
+        print "difference in X in meters", diffX
+        print "difference in Y in meters", diffY
+        
+        #convert in centimeters
+        diffX = int(round(diffX*100))
+        diffY = int(round(diffY*100))
+        
+        return [diffX,diffY]
+    
 # offers the same methods as GoToPos, but with a different method
 # we implemented both to compare and chose the best one
 class Move:
@@ -156,9 +171,12 @@ class Move:
         print "finished pushing the box"
 
     # enables to go in a given direction (negative distance for backwards)
-    # give distance in centimeters and angle in radians
+    # give distance in centimeters and angle in degree
     def move(self, distance, angle):
         print "move on ", distance, "with direction ", angle
+        #first rotate
+        self.rotateD(angle)
+        
         r = rospy.Rate(10)
         move_cmd = Twist()
         # let's go forward at 0.1 m/s
@@ -168,19 +186,12 @@ class Move:
             move_cmd.linear.x = 0.1
             
         distance = abs(distance)
-        # let's turn at x radians/s
-        move_cmd.angular.z = angle
-
-        print "position before moving:"
-        print PositionService.getCurrentPositionAsMap()
         
         for i in range(distance):
             self.cmd_vel.publish(move_cmd)
             # wait for 0.1 seconds (10 HZ) and publish again
             r.sleep()
         print "finished moving"
-        print "position after moving:"
-        print PositionService.getCurrentPositionAsMap()
         
     #rotate from an angle in degre
     def rotateD(self, angle_in_degre):
@@ -206,32 +217,34 @@ class Move:
         
         # must first check if difference is big enough 
         current_position = PositionService.getCurrentPositionAsMap()
+
+        # rotates to face the X direction
+        direction= Position.getDirection(current_position)
+        self.rotateR(-direction)
+        
+        # we ask each time for the position since any move has an impact
+        current_position = PositionService.getCurrentPositionAsMap()
+        diff = Position.diffInPosition(target, current_position)
         
         # need to deal with negative Y
         y = target["position"]["y"]
-        diffX = target["position"]["x"] - current_position["position"]["x"]
-        diffY = target["position"]["y"] - current_position["position"]["y"]
+        diffX = diff[0]
         
-        print "difference in X in meters", diffX
-        print "difference in Y in meters", diffY
-        
-        #convert in centimeters
-        diffX = int(round(diffX*100))
-        diffY = int(round(diffY*100))
-        
-        #if we are close enough from the desired position we do not do anything
-        #in fact we should still correct the direction. To be fixed
-        if(abs(diffX) <5 and abs(diffY) <5):
-            pass
-        
-        # rotates to face the X direction
-        dir= Position.getDirection(current_position)
-        self.rotateR(-dir)
-        
+        # first move        
         self.move(diffX,0)
+        
         # get desired angle
-        dir= Position.getDirection(target)
-        self.rotateR(dir)
+        current_position = PositionService.getCurrentPositionAsMap()
+        direction= Position.diffInDirection(target, current_position)
+        self.rotateR(direction)
+ 
+        # we ask each time for the position since any move has an impact
+        current_position = PositionService.getCurrentPositionAsMap()
+        diff = Position.diffInPosition(target, current_position)
+        
+        # need to deal with negative Y
+        diffY = diff[1]
+        
         if y < 0:
             self.move(-1*diffY,0)
         else:

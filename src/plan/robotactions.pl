@@ -62,15 +62,16 @@ deletes(move(R, D), [at(R, At)], robot) :- robot(R), position(At), distance(D).
 
 
 /*definition de scenaris pour les robots: */
-/* premier: getCoffee (prendre le gobelet dans une piece et l'amener dans une autre et le poser sur une boite */
-
-%getCoffee(P):- plan([handempty(samira), clear(cup), on(cup, chair), at(samira, principale), at(cup, chair), at(table, sofa), free(table)], [handempty(samira), on(cup, table)], robot, P).
-getCoffee(P):- P= [[goTo(samira, principale, chair)], [take(samira, cup, chair, chair)], [goTo(samira, chair, sofa)], [put(samira, cup, table)]].
+/* premier: getCoffee (prendre le gobelet dans une piece pour l'amener dans une autre et le poser sur une boite */
+getCoffee(P):- P= [[goTo(samira, start, box)], [take(samira, cup, box, carton)], [goTo(raphael, tv, start)], [goTo(samira, box, tv)], [put(samira, cup, table)]].
 /* second : prendre un objet */
 takeObject(P):- plan([handempty(samira), clear(cup), at(samira, principale), at(cup, principale), on(cup,box)], [holding(samira, cup)], robot, P).
 /* troisieme : clean room (consiste a bouger une boite en ayant retire l'objet qui est dessus. Doit faire intervenir 2 robots */
 /*clean(P):- plan([handempty(samira), handempty(raphael), clear(cup), on(cup,box), at(cup, principale), at(samira, principale), at(box, principale), at(raphael, salle2)], [atD(box, principale, 100), holding(samira, cup)], robot, P). */
 clean(P):- P= [[goTo(samira, start, box), take(samira, cup, box, carton),goTo(samira, box, start), goTo(raphael, tv, boxp)], [push(raphael, box, -40)]].
+
+/* 4eme plan: chaque robot prend un gobelet et le pose sur une autre boite. Puis ils rangent les boites */
+full(P):- P=[[goTo(samira, start, box), take(samira, cup, box, carton), goTo(raphael, start, tv), take(raphael, cup, box, carton), goTo(raphael, tv, sofa), put(raphael, cup, table), goTo(raphael, sofa, tvp), goTo(samira, box, sofa), put(samira, cup, table), goTo(samira, sofa, boxp)], [push(raphael, box, -40), push(samira, box, -40)]].
 
 
 

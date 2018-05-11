@@ -44,7 +44,7 @@ class ArmPub:
     # on the right 90. Second parameter = -PI/2
     #POSITION_TAKE = [0,0,0.38,0.28, 0.88, -1.7]
     POSITION_TAKE = [0,0,1.02,-1.15, 1.57, -1.7]
-    POSITION_PUT = [2.6,0,0.38,0.28, 0.88, -1.7]
+    POSITION_PUT = [2.6,0,1.02,-1.15, 1.57, -1.7]
     #POSITION_2 = [0,0,1.07,-0.59, 0.88, -1.7]
     POSITION_RELAX = [0,0,-1.21,1.5,0.64, 0]
     POSITION_BRING = [2.6,0,-0.57,0.12,1.5,-1.7]
@@ -119,5 +119,5 @@ class ArmPub:
         self.openGripper()
         # waits 2 seconds before taking the object off the support
         time.sleep(2)
-        self.goToPosition(ArmPub.POSITION_BRING)
+        self.goToPosition(ArmPub.POSITION_RELAX)
         

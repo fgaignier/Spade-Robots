@@ -169,6 +169,7 @@ class Move:
         print "push the box on ", distance
         self.move(distance, angle)
         print "finished pushing the box"
+        #self.shutdown()
 
     # enables to go in a given direction (negative distance for backwards)
     # give distance in centimeters and angle in degree
@@ -192,6 +193,7 @@ class Move:
             # wait for 0.1 seconds (10 HZ) and publish again
             r.sleep()
         print "finished moving"
+        #self.shutdown()
         
     #rotate from an angle in degre
     def rotateD(self, angle_in_degre):

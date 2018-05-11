@@ -42,7 +42,8 @@ class ArmPub:
     # with gripper closed. First parameter = 2.6
     # on the left 90. Second parameter = PI/2
     # on the right 90. Second parameter = -PI/2
-    POSITION_TAKE = [0,0,0.38,0.28, 0.88, -1.7]
+    #POSITION_TAKE = [0,0,0.38,0.28, 0.88, -1.7]
+    POSITION_TAKE = [0,0,1.02,-1.15, 1.57, -1.7]
     POSITION_PUT = [2.6,0,0.38,0.28, 0.88, -1.7]
     #POSITION_2 = [0,0,1.07,-0.59, 0.88, -1.7]
     POSITION_RELAX = [0,0,-1.21,1.5,0.64, 0]

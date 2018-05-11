@@ -235,7 +235,8 @@ class Move:
         
         # get desired angle
         current_position = PositionService.getCurrentPositionAsMap()
-        direction= Position.diffInDirection(target, current_position)
+        #direction= Position.diffInDirection(target, current_position)
+        direction = Position.getDirection(target)
         self.rotateR(direction)
  
         # we ask each time for the position since any move has an impact
@@ -245,7 +246,7 @@ class Move:
         # need to deal with negative Y
         diffY = diff[1]
         
-        if y < 0:
+        if y < 0 and direction <0:
             self.move(-1*diffY,0)
         else:
             self.move(diffY,0)

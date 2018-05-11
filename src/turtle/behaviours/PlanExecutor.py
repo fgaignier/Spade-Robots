@@ -95,6 +95,11 @@ class action(object):
         
         goService = GoToPose()
         goService.goTo(to["position"], to["quaterion"])
+        goService.shutdown()
+        # correction: will assess the reached position against thetraget and ajust if necessary
+        corrector = Move()
+        corrector.correctPosition(to)
+        corrector.shutdown()
         
     def take(self, robot, obj, place, pos):
         print(robot + " taking: " + obj + " At: " + place + " On: " + pos)

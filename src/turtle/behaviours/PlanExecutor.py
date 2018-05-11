@@ -111,15 +111,15 @@ class action(object):
     
     def push(self, robot, obj, distance):
         print(robot + " pushing: " + obj + " On: " + distance)
-        #moveService = Move()
-        moveService = GoToPose()
-        moveService.push(distance)
+        moveService = Move()
+        #moveService = GoToPose()
+        moveService.push(int(distance))
         
     def move(self, robot, dist, angle):
         print(robot + " moving on distance: " + dist + " With angle: " + angle)
-        #moveService = Move()
-        moveService = GoToPose()
-        moveService.move(dist, angle)
+        moveService = Move()
+        #moveService = GoToPose()
+        moveService.move(int(dist), float(angle))
         
     # this is when the first parameter is different from the robot executing the plan
     # the action is sent to the robot in charge of executing the task

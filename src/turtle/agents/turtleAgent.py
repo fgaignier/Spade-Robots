@@ -42,7 +42,7 @@ class TurtleAgent(Agent):
             device.setSpeed(i, 20)
 
         
-        self.arm = ArmPub()
+        self.arm = ArmPub(name)
         self.arm.goToPosition(ArmPub.POSITION_RELAX)
         
         

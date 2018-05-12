@@ -4,8 +4,8 @@ Created on Feb 24, 2018
 @author: gaignier
 '''
 
+import time
 from spadeAgent import Agent
-from plan import PlanExecutorOld.PlanExecutor
 
 class SpadeTestAgent(Agent):
     def __init__(self, name, host, secret, graphplan, actionplan, pathplan):
@@ -17,8 +17,16 @@ class SpadeTestAgent(Agent):
         Agent.__init__(self, name, host, secret, graphplan, actionplan, [])
         
         #plan = self.planer.getPlan(initialState, goal, robot)
+        time.sleep(5)
         plan = self.planer.getActionPlan("getCoffee")
+        if plan == False:
+            plan = self.planer.getActionPlan("getCoffee")
         print(plan)
-        pe = PlanExecutorOld(plan, "samira")
-        pe.printBehaviour()
-        self.addBehaviour(pe, None)
+        
+        time.sleep(5)
+        plan = self.planer.getActionPlan("clear")
+        if plan == False:
+            plan = self.planer.getActionPlan("clear")
+        
+        print(plan)
+        

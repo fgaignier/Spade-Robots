@@ -1,9 +1,6 @@
 '''
 Created on Apr 6, 2018
 @author: gaignier
-using the arbotix python package to command the arm:
-http://docs.ros.org/jade/api/arbotix_python/html/classarbotix__python_1_1arbotix_1_1ArbotiX.html#a456f38adeb1075dcdd24ff7f1ad6a1cf
-much better than the usual subscribing method
 '''
 
 import rospy
@@ -15,6 +12,7 @@ from sensor_msgs.msg import JointState
 
 from arbotix_python.joints import getJointsFromURDF
 from arbotix_python.joints import getJointLimits
+from common.Vocabulary import Vocabulary
 
 
 class Servo:
@@ -42,15 +40,20 @@ class ArmPub:
     # with gripper closed. First parameter = 2.6
     # on the left 90. Second parameter = PI/2
     # on the right 90. Second parameter = -PI/2
-    #POSITION_TAKE = [0,0,0.38,0.28, 0.88, -1.7]
-    #POSITION_TAKE_RAPH = [0,0,0.9,-0.67, 1.33, 0]
-    POSITION_TAKE = [0,0,1.02,-1.15, 1.57, -1.7]
-    POSITION_PUT = [2.6,0,1.02,-1.15, 1.57, -1.7]
-    #POSITION_2 = [0,0,1.07,-0.59, 0.88, -1.7]
+    
+    #POSITION_TAKE_OLD = [0,0,0.38,0.28, 0.88, -1.7]
+    POSITION_TAKE_RAPH = [0,0,0.9,-0.67, 1.33, -1.7]
+    POSITION_TAKE_SAM = [0,0,1.02,-1.15, 1.57, -1.7]
+    
+    POSITION_PUT_RAPH = [0,0,0.9,-0.67, 1.33, -1.7]
+    POSITION_PUT_SAM = [2.6,0,1.02,-1.15, 1.57, -1.7]
+    
     POSITION_RELAX = [0,0,-1.21,1.5,0.64, 0]
     POSITION_BRING = [2.6,0,-0.57,0.12,1.5,-1.7]
     
-    def __init__(self):
+    def __init__(self, name):
+        
+        self.agent_name = name 
         self.cmd_vel = rospy.Publisher('cmd_vel', Twist, queue_size=5)
         joint_defaults = getJointsFromURDF()
         
@@ -104,8 +107,13 @@ class ArmPub:
         self.goToPosition(ArmPub.POSITION_BRING)
         # waits 2 seconds before closing the gripper
         time.sleep(2)
+        
         # goes into take position
-        self.goToPosition(self.POSITION_TAKE)
+        if self.agent_name == Vocabulary.TURTLE1:
+            self.goToPosition(self.POSITION_TAKE_SAM)
+        else:
+            self.goToPosition(self.POSITION_TAKE_RAPH)
+            
         # waits 2 seconds before closing the gripper
         time.sleep(2)
         self.closeGripper()
@@ -114,7 +122,12 @@ class ArmPub:
         self.goToPosition(ArmPub.POSITION_BRING)
         
     def put(self):
-        self.goToPosition(self.POSITION_PUT)
+        
+        if self.agent_name == Vocabulary.TURTLE1:
+            self.goToPosition(self.POSITION_PUT_SAM)
+        else:
+            self.goToPosition(self.POSITION_PUT_RAPH)
+            
         # waits 2 seconds before closing the gripper
         time.sleep(2)
         self.openGripper()

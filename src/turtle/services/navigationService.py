@@ -34,7 +34,6 @@ class GoToPose:
         
     def move(self, distance, direction):
         print "move on ", distance, "with direction ", direction
-        #we'll send a goal to the robot to move 3 meters forward
         goal = MoveBaseGoal()
         goal.target_pose.header.frame_id = 'base_link'
         goal.target_pose.header.stamp = rospy.Time.now()
@@ -67,12 +66,9 @@ class GoToPose:
 
         
         # Start moving
-        print "sending goal", pos, quat
         self.move_base.send_goal(goal)
-        print "goal sent"
         # Allow TurtleBot up to 60 seconds to complete task
         success = self.move_base.wait_for_result(rospy.Duration(60))
-        print "moving base finished"
         state = self.move_base.get_state()
         result = False
 
@@ -84,8 +80,7 @@ class GoToPose:
         
         # will be used to evaluate the difference between goal and reality
         print "goal sent", pos, quat
-        print "goal reached:"
-        print PositionService.getCurrentPositionAsMap()
+        print "goal reached:", PositionService.getCurrentPositionAsMap()
         
         self.goal_sent = False
         return result
@@ -130,18 +125,14 @@ class Position:
     @staticmethod
     def diffInDirection(target, position):
         diff = Position.getDirection(target) - Position.getDirection(position)
-        print "difference in angle between expected and realized = ", diff 
+        #print "difference in angle between expected and realized = ", diff 
         return diff
     
     @staticmethod
     def getDirection(position):
         quat = position["quaterion"]
         quater =  Quaternion(quat['r1'], quat['r2'], quat['r3'], quat['r4'])
-        #angles = transformations.euler_from_quaternion(quater)
         angles = transformations.euler_from_quaternion([quat['r1'], quat['r2'], quat['r3'], quat['r4']])
-        print "angles of position = ", angles
-      
-        print "direction (in radians) = ", angles[2] 
         return angles[2]
     
     # returns the X and Y difference between two positions
@@ -149,9 +140,6 @@ class Position:
     def diffInPosition(target, position):
         diffX = target["position"]["x"] - position["position"]["x"]
         diffY = target["position"]["y"] - position["position"]["y"]
-        
-        print "difference in X in meters", diffX
-        print "difference in Y in meters", diffY
         
         #convert in centimeters
         diffX = int(round(diffX*100))
@@ -168,8 +156,8 @@ class Move:
     def push(self, distance, angle=0):
         print "push the box on ", distance
         self.move(distance, angle)
-        print "finished pushing the box"
-        #self.shutdown()
+        # and go back else blocked
+        self.move(-1*distance, angle)
 
     # enables to go in a given direction (negative distance for backwards)
     # give distance in centimeters and angle in degree
@@ -192,8 +180,6 @@ class Move:
             self.cmd_vel.publish(move_cmd)
             # wait for 0.1 seconds (10 HZ) and publish again
             r.sleep()
-        print "finished moving"
-        #self.shutdown()
         
     #rotate from an angle in degre
     def rotateD(self, angle_in_degre):
@@ -240,7 +226,11 @@ class Move:
         #direction= Position.diffInDirection(target, current_position)
         direction = Position.getDirection(target)
         self.rotateR(direction)
- 
+        # one more time. The smaller the angle the better the precision
+        current_position = PositionService.getCurrentPositionAsMap()
+        direction= Position.diffInDirection(target, current_position)
+        self.rotateR(direction)
+        
         # we ask each time for the position since any move has an impact
         current_position = PositionService.getCurrentPositionAsMap()
         diff = Position.diffInPosition(target, current_position)
@@ -252,6 +242,9 @@ class Move:
             self.move(-1*diffY,0)
         else:
             self.move(diffY,0)
+            
+        current_position = PositionService.getCurrentPositionAsMap()
+        print "final position reached after correction: ", current_position
     
     def shutdown(self):
         # stop turtlebot

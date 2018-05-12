@@ -17,8 +17,8 @@ class WaitMessageBehaviour(OneShotBehaviour):
         while True:
             message = self.myAgent.communicator.waitForMessage(None)
             print "waitForMessageBehaviour: message received by turtle ", message.getContent(), message.getOntology(), message.getPerformative()
-            print "sent by ", message.getSender()
-            print "I am ", self.myAgent.getName()
+            #print "sent by ", message.getSender()
+            #print "I am ", self.myAgent.getName()
             self.myAgent.messageSender = message.getSender()
             
             # first we check the performative. REQUEST for actions, QUERY-IF for questions, INFORM for information
@@ -28,7 +28,7 @@ class WaitMessageBehaviour(OneShotBehaviour):
                     content = Vocabulary.parseMessage(message.getContent())
                     if(content['object'] == Vocabulary.GOTO):
                         destination = content['params'][0]
-                        print destination
+                        #print destination
                         if destination in self.myAgent.getData("knowledge")["pose"].keys():
                             print "goto message received"
                             self.myAgent.setData("goals", {"pose": self.myAgent.getData("knowledge")["pose"][destination]})

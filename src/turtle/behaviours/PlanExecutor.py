@@ -45,9 +45,6 @@ class PlanExecutor(OneShotBehaviour):
         
 
     def process(self):
-        #myFullName = self.myAgent.getname()
-        #spl1 = myFullName.split('@')
-        #myName = spl1[0]
         myName = self.myAgent.name
         print "in plan executor: myName= ", myName
         self.addPlan(self.myAgent.plan)
@@ -127,9 +124,9 @@ class action(object):
         print "sending action request to: ", self.parameters[0]
         ct = Vocabulary.buildMessage(self.name, self.parameters)
         host = self.myAgent.host
-        print "hostname is : " + host
+        #print "hostname is : " + host
         dest = Vocabulary.getAid(self.parameters[0], host)
-        print("message: ", ct, "to ", dest)
+        #print("message: ", ct, "to ", dest)
         message = spade.ACLMessage.ACLMessage()
         message.setPerformative(Vocabulary.REQUEST)
         message.setOntology(Vocabulary.TURTLEMOVE)

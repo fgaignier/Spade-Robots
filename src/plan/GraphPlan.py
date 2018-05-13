@@ -95,8 +95,15 @@ class GraphPlan(object):
             plan = self.a.askBelieve( request )
        
             if plan == False:
-                print("could not find a plan.")
-                return False
+                time.sleep(5)
+                request = "plan_" + request
+                print("requested plan: " + request)
+                plan = self.a.askBelieve( request )
+                if plan == False:
+                    print("could not find a plan")
+                    return False
+                else:
+                    return self.splitPlan(plan)
             else:
                 return self.splitPlan(plan)
         

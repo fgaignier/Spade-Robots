@@ -153,11 +153,13 @@ class Move:
     def __init__(self):
         self.cmd_vel = rospy.Publisher('cmd_vel_mux/input/navi', Twist, queue_size=10)
 
+    # need to turn 180 degrees, push backwards and move forward (else goTo will not work)
     def push(self, distance, angle=0):
         print "push the box on ", distance
-        self.move(distance, angle)
-        # and go back else blocked
+        self.rotateD(180)
         self.move(-1*distance, angle)
+        # and go back else blocked
+        self.move(distance, angle)
 
     # enables to go in a given direction (negative distance for backwards)
     # give distance in centimeters and angle in degree

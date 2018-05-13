@@ -19,14 +19,12 @@ class SpadeTestAgent(Agent):
         #plan = self.planer.getPlan(initialState, goal, robot)
         time.sleep(5)
         plan = self.planer.getActionPlan("getCoffee")
-        if plan == False:
-            plan = self.planer.getActionPlan("getCoffee")
         print(plan)
         
         time.sleep(5)
-        plan = self.planer.getActionPlan("clear")
-        if plan == False:
-            plan = self.planer.getActionPlan("clear")
-        
+        plan = self.planer.getActionPlan("clearBox1")        
         print(plan)
         
+        time.sleep(5)
+        plan = self.planer.getActionPlan("moveCups")        
+        print(plan)

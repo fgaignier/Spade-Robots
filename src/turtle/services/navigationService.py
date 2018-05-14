@@ -156,7 +156,7 @@ class Move:
     # need to turn 180 degrees, push backwards and move forward (else goTo will not work)
     def push(self, distance, angle=0):
         print "push the box on ", distance
-        self.rotateD(180)
+        self.rotateD(240)
         self.move(-1*distance, angle)
         # and go back else blocked
         self.move(distance, angle)
@@ -230,8 +230,8 @@ class Move:
         self.rotateR(direction)
         # one more time. The smaller the angle the better the precision
         current_position = PositionService.getCurrentPositionAsMap()
-        direction= Position.diffInDirection(target, current_position)
-        self.rotateR(direction)
+        direction2= Position.diffInDirection(target, current_position)
+        self.rotateR(direction2)
         
         # we ask each time for the position since any move has an impact
         current_position = PositionService.getCurrentPositionAsMap()
